@@ -6,6 +6,8 @@ import json
 import sys
 import requests
 
+content_type = {'Content-Type': 'application/json'}
+
 
 def generate_success_response(code, response_data):
     """
@@ -14,7 +16,6 @@ def generate_success_response(code, response_data):
     :param int code: Success code
     :param response_data: JSON response to return
     """
-    content_type = {'Content-Type': 'application/json'}
     return json.dumps(response_data), code, content_type
 
 
@@ -25,12 +26,11 @@ def generate_error_response(code, error_message):
     :param int code: Error code
     :param str error_message: Error message for response
     """
-    content_type = {'Content-Type': 'application/json'}
     print(error_message)
     return json.dumps(error_message), code, content_type
 
 
-def generate_exception_response(exception, error_message=''):
+def generate_exception_response(exception, error_message='An exception occurred when processing the request'):
     """
     Generate API exception response
 

@@ -4,7 +4,7 @@ Geoapp Routes
 
 import requests
 from flask import session, Blueprint
-from services.api_services import generate_exception_response, generate_error_response, generate_success_response
+from services.api_services import generate_exception_response, generate_success_response, generate_error_response
 from services.geoapp_services import GeoAppServices
 
 # set blueprint
@@ -14,21 +14,27 @@ geoapp_bp = Blueprint('geoapp_bp', __name__)
 services = GeoAppServices()
 
 
-@geoapp_bp.route('/', methods=['GET'])
-def index():
+@geoapp_bp.route('/geoapp/zipcode/<string:zipcode>', methods=['GET'])
+def get_paystats_by_zipcode(zipcode: str):
     """
-    Index
-    """
-    return 'Go to /geoapp route to display movie list'
+    Get paystats by age and gender given a zipcode
 
-
-@geoapp_bp.route('/geoapp', methods=['GET'])
-def get_data():
-    """
-    Description
+    :param str zipcode: Zip Code
+    :return: Paystats dict with aggregated data
+    :rtype dict
     """
     try:
-        paystats = services.get_paystats()
-        return generate_success_response(code=requests.codes['ok'], response_data=paystats)
+        if session.get(zipcode):  # get data from session if already stored
+            paystats = session[zipcode]
+        else:  # get from db otherwise
+            paystats = services.get_paystats_by_zipcode(zipcode=zipcode)
+            # store in session
+            session[zipcode] = paystats
+        if paystats:
+            return generate_success_response(code=requests.codes['ok'],
+                                             response_data=paystats)
+        else:
+            return generate_error_response(code=requests.codes['not_found'],
+                                           error_message=f"No data found for zipcode {zipcode}")
     except Exception as e:
-        return generate_exception_response(exception=e, error_message='An error occurred when processing the request')
+        return generate_exception_response(exception=e)

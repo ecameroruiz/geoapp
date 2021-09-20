@@ -11,7 +11,7 @@ class Config:
     # set session config
     SECRET_KEY = 'secret_key'
     SESSION_COOKIE_NAME = 'SESSION_COOKIE_NAME'
-    PERMANENT_SESSION_LIFETIME = timedelta(minutes=1)  # session will last for 1 minute
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=1)  # session will last for 5 minute
 
     API_MAX_RESULTS = 250
 

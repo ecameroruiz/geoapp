@@ -15,10 +15,10 @@ class DatabaseTools:
     """
 
     def __init__(self):
-        self.db_credentials = self.get_db_credentials()
+        self.db_credentials = self.__get_db_credentials()
 
     @staticmethod
-    def get_db_credentials():
+    def __get_db_credentials():
         """
         Reads DB credentials
         """
@@ -26,7 +26,7 @@ class DatabaseTools:
         with open(current_path + '/credentials.json') as credentials_file:
             return json.load(credentials_file)
 
-    def get_db_connection(self):
+    def __get_db_connection(self):
         """
         Creates DB connection
         """
@@ -36,13 +36,13 @@ class DatabaseTools:
                                 port=self.db_credentials['port'],
                                 database=self.db_credentials['database'])
 
-    def execute_sql(self, sql: str):
+    def __execute_sql(self, sql: str):
         """
         Execute SQL code and return cursor
 
         :param str sql: SQL to execute
         """
-        cursor = self.get_db_connection().cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor = self.__get_db_connection().cursor(cursor_factory=psycopg2.extras.DictCursor)
         cursor.execute(sql)
         return cursor
 
@@ -52,7 +52,7 @@ class DatabaseTools:
 
         :param str query: Query to execute
         """
-        cursor = self.execute_sql(query)
+        cursor = self.__execute_sql(query)
         rows = cursor.fetchall()
         cursor.close()
         return [dict(row) for row in rows]
@@ -64,7 +64,7 @@ class DatabaseTools:
         :param str table_name: Table / SQL file name
         """
         table_script = open(f"tables/{table_name}.sql")
-        connection = self.get_db_connection()
+        connection = self.__get_db_connection()
         cursor = connection.cursor()
         cursor.execute(table_script.read())
         connection.commit()
@@ -79,16 +79,16 @@ class DatabaseTools:
         :param str table_name: The name of the table in the DB
         :param pd.DataFrame dataframe: The dataframe to populate the table
         """
-        cursor = self.execute_sql(sql=f"SELECT * FROM {table_name} LIMIT 0")
+        cursor = self.__execute_sql(sql=f"SELECT * FROM {table_name} LIMIT 0")
 
         # get col names in right order for insertion
         col_names = [i[0] for i in cursor.description]
         dataframe = dataframe[col_names]
 
-        connection = self.get_db_connection()
+        connection = self.__get_db_connection()
         cursor = connection.cursor()
 
-        # insert each row of dataframe into table
+        # TODO: improve performance, there should be a way to do bulk insertion
         for index, row in dataframe.iterrows():
             cursor.execute(f"INSERT INTO {table_name} VALUES{tuple(row.values)}")
             connection.commit()
