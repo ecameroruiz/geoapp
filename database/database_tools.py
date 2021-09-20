@@ -63,7 +63,8 @@ class DatabaseTools:
 
         :param str table_name: Table / SQL file name
         """
-        table_script = open(f"tables/{table_name}.sql")
+        current_path = os.path.dirname(os.path.abspath(__file__))
+        table_script = open(current_path + f"/tables/{table_name}.sql")
         connection = self.get_db_connection()
         cursor = connection.cursor()
         cursor.execute(table_script.read())
@@ -71,6 +72,7 @@ class DatabaseTools:
         cursor.close()
         connection.close()
         table_script.close()
+        print(f"table {table_name} created")
 
     def populate_table(self, table_name: str, dataframe: pd.DataFrame):
         """
@@ -95,3 +97,4 @@ class DatabaseTools:
 
         cursor.close()
         connection.close()
+        print(f"table {table_name} populated")

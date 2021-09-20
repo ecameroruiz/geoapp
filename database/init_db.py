@@ -1,6 +1,4 @@
-"""
-DB Initialization
-"""
+#!/usr/local/bin/python3
 
 import os
 import pandas as pd
@@ -25,6 +23,7 @@ def set_up_table(table_name: str, dataframe: pd.DataFrame):
 current_path = os.path.dirname(os.path.abspath(__file__))
 postal_codes = pd.read_csv(current_path + f"/../data/postal_codes.csv")
 paystats = pd.read_csv(current_path + f"/../data/paystats.csv")
+users = pd.read_csv(current_path + f"/../data/users.csv")
 
 # clean data: some postal code ids from paystats are not in postal codes ids
 valid_postal_code_ids = postal_codes['id'].tolist()
@@ -33,3 +32,4 @@ paystats = paystats[paystats['postal_code_id'].isin(valid_postal_code_ids)]
 # set up tables
 set_up_table(table_name="postal_codes", dataframe=postal_codes)
 set_up_table(table_name="paystats", dataframe=paystats)
+set_up_table(table_name="users", dataframe=users)
