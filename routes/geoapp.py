@@ -6,6 +6,7 @@ import requests
 from flask import session, Blueprint
 from services.api_services import generate_exception_response, generate_success_response, generate_error_response
 from services.geoapp_services import GeoAppServices
+from wrappers import requires_auth
 
 # set blueprint
 geoapp_bp = Blueprint('geoapp_bp', __name__)
@@ -15,6 +16,7 @@ services = GeoAppServices()
 
 
 @geoapp_bp.route('/geoapp/zipcode/<string:zipcode>', methods=['GET'])
+@requires_auth
 def get_paystats_by_zipcode(zipcode: str):
     """
     Get paystats by age and gender given a zipcode

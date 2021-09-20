@@ -4,7 +4,8 @@ Initialize Flask App
 
 from flask import Flask
 from config import app_config
-from routes import geoapp_bp
+from routes.geoapp import geoapp_bp
+from routes.registration import registration_bp
 
 
 def create_app(config):
@@ -23,7 +24,8 @@ def create_app(config):
     # set configuration
     app.config.from_object(config_name)
 
-    # register blueprint
+    # register blueprints
     app.register_blueprint(geoapp_bp)
+    app.register_blueprint(registration_bp)
 
     return app
