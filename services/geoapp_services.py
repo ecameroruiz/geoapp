@@ -26,13 +26,13 @@ class GeoAppServices:
                 "ON POSTAL_CODES.ID = PAYSTATS.POSTAL_CODE_ID " \
                 "WHERE CODE = {zipcode} " \
                 "GROUP BY PAYSTATS.P_AGE, PAYSTATS.P_GENDER " \
-                "ORDER BY PAYSTATS.P_AGE DESC".format(zipcode=zipcode)
+                "ORDER BY PAYSTATS.P_AGE ASC".format(zipcode=zipcode)
         result = self.db_tools.execute_query(query=query)
-        grouped = self.__group_by(key='age', data=result)
+        grouped = self.__serialize(key='age', data=result)
         return grouped
 
     @staticmethod
-    def __group_by(key, data):
+    def __serialize(key, data):
         """
         Creates a dictionary from given list of dicts grouped by given key
 
@@ -43,5 +43,7 @@ class GeoAppServices:
         for item in data:
             # exclude grouping key
             copy = {k: v for k, v in item.items() if k != key}
+            # format money field TODO: casting on query would be faster
+            copy['turnover'] = "{:,.2f}€".format(copy['turnover'])
             grouped[item[key]].append(copy)
         return grouped
