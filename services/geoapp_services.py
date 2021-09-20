@@ -12,6 +12,9 @@ class GeoAppServices:
     """
 
     def __init__(self):
+        """
+        Initialize db tools
+        """
         self.db_tools = DatabaseTools()
 
     def get_paystats_by_zipcode(self, zipcode: str):
@@ -28,8 +31,8 @@ class GeoAppServices:
                 "GROUP BY PAYSTATS.P_AGE, PAYSTATS.P_GENDER " \
                 "ORDER BY PAYSTATS.P_AGE ASC".format(zipcode=zipcode)
         result = self.db_tools.execute_query(query=query)
-        grouped = self.__serialize(key='age', data=result)
-        return grouped
+        serialized = self.__serialize(key='age', data=result)
+        return serialized
 
     @staticmethod
     def __serialize(key, data):

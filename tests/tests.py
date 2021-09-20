@@ -1,13 +1,12 @@
 """
-Unit Tests
+Geoapp routes tests
 """
 
-import json
-import os
+import base64
 from unittest import TestCase
 from init import create_app
 from services.geoapp_services import GeoAppServices
-from unittest.mock import MagicMock
+import requests
 
 
 class Tests(TestCase):
@@ -29,17 +28,22 @@ class Tests(TestCase):
         # set up geoapp services
         cls.movies_api_services_tester = GeoAppServices()
 
-        # read test data
-        cls.test_postal_codes = json.load(open(os.path.dirname(os.path.abspath(__file__))
-                                               + '/test_data/test_postal_codes.json'))
-        cls.test_paystats = json.load(open(os.path.dirname(os.path.abspath(__file__))
-                                           + '/test_data/test_paystats.json'))
+        # set auth headers TODO: credentials should be read from a file
+        valid_credentials = base64.b64encode(b"test_username:test_password").decode("utf-8")
+        cls.headers = {'Authorization': 'Basic ' + valid_credentials}
 
-    def test_get_paystats(self):
+    def test_get_paystats_existing_zipcode(self):
         """
-        Test get paystats route
+        Test route for existing zipcode
         """
-        response = self.client.get('/geoapp')
-        # check response is correct
-        self.assertEqual(response.status_code, 200)
+        existing_zipcode = '28008'
+        response = self.client.get(f"/geoapp/zipcode/{existing_zipcode}", headers=self.headers)
+        self.assertEqual(response.status_code, requests.codes['ok'])
 
+    def test_get_paystats_non_existing_zipcode(self):
+        """
+        Test route for non existing zipcode
+        """
+        non_existing_zipcode = '00000'
+        response = self.client.get(f"/geoapp/zipcode/{non_existing_zipcode}", headers=self.headers)
+        self.assertEqual(response.status_code, requests.codes['not_found'])

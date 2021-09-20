@@ -12,6 +12,9 @@ class AuthorizationServices:
     """
 
     def __init__(self):
+        """
+        Initialize db tools
+        """
         self.db_tools = DatabaseTools()
 
     @staticmethod
