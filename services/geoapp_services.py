@@ -23,7 +23,8 @@ class GeoAppServices:
 
         :param str zipcode: Zip Code
         """
-        query = self.__get_query(column='code', value=zipcode)
+        where = f"WHERE POSTAL_CODES.CODE = '{zipcode}'"
+        query = self.__get_query(where_clause=where)
         result = self.db_tools.execute_query(query=query)
         serialized = self.__serialize(key='age', data=result)
         return serialized
@@ -34,7 +35,8 @@ class GeoAppServices:
 
         :param str geometry: Geometry
         """
-        query = self.__get_query(column='the_geom', value=geometry, compare_as_str=True)
+        where = f"WHERE POSTAL_CODES.THE_GEOM = '{geometry}'"
+        query = self.__get_query(where_clause=where)
         result = self.db_tools.execute_query(query=query)
         serialized = self.__serialize(key='age', data=result)
         return serialized
@@ -43,25 +45,18 @@ class GeoAppServices:
         """
         Get all paystats by age and gender
         """
-        query = self.__get_query(column='', value='', compare_as_str=False, apply_filter=False)
+        query = self.__get_query(where_clause='')
         result = self.db_tools.execute_query(query=query)
         serialized = self.__serialize(key='age', data=result)
         return serialized
 
     @staticmethod
-    def __get_query(column: str, value: str, compare_as_str: bool = False, apply_filter: bool = True):
+    def __get_query(where_clause: str):
         """
-        Generate query according to column / value to filter by
+        Generate query according to conditions to filter by
 
-        :param str column: Column to filter by
-        :param str value: Value to filter by
-        :param bool compare_as_str: Compare between quotes if True
-        :param bool apply_filter: Apply where clause if True
+        :param str where_clause: Filter to apply (if any)
         """
-        where_clause = ""
-        if apply_filter:
-            value_to_compare = f"'{value}'" if compare_as_str else f"{value}"
-            where_clause = f"WHERE POSTAL_CODES.{column.upper()} = {value_to_compare}"
         return "SELECT PAYSTATS.P_AGE AS AGE, PAYSTATS.P_GENDER AS GENDER, SUM(PAYSTATS.AMOUNT) AS TURNOVER " \
                "FROM POSTAL_CODES " \
                "JOIN PAYSTATS " \
