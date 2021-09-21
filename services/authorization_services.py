@@ -1,5 +1,5 @@
 """
-Registration Services
+Authorization Services
 """
 
 from database.database_tools import DatabaseTools
@@ -29,7 +29,7 @@ class AuthorizationServices:
     @staticmethod
     def __verify_password(password, hashed_password):
         """
-        Verify password against has
+        Verify password against db hashed password
 
         :param str password: Password to check
         :param str hashed_password: Hashed password
