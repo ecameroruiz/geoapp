@@ -2,7 +2,8 @@
 Geoapp Services
 """
 
-from collections import defaultdict
+import itertools
+from operator import itemgetter
 from database.database_tools import DatabaseTools
 
 
@@ -66,18 +67,18 @@ class GeoAppServices:
                "ORDER BY PAYSTATS.P_AGE ASC".format(where_clause=where_clause)
 
     @staticmethod
-    def __serialize(key, data):
+    def __serialize(key: str, data: list):
         """
-        Creates a dictionary from given list of dicts grouped by given key
+        Groups data and improves format
 
         :param str key: Key to group by
         :param list data: List of dicts
         """
-        grouped = defaultdict(list)
-        for item in data:
-            # exclude grouping key
-            copy = {k: v for k, v in item.items() if k != key}
-            # format money field TODO: casting on query would be faster
-            copy['turnover'] = "{:,.2f}€".format(copy['turnover'])
-            grouped[item[key]].append(copy)
-        return grouped
+        grouped_data = list()
+        for grouping_key, grouping_value in itertools.groupby(data, key=itemgetter(key)):
+            aggregated_data = dict()
+            aggregated_data.update({key.upper(): grouping_key})
+            for data in grouping_value:
+                aggregated_data.update({data.get('gender'): "{:,.2f}€".format(data.get('turnover'))})
+            grouped_data.append(aggregated_data)
+        return grouped_data
