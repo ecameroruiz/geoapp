@@ -15,6 +15,14 @@ geoapp_bp = Blueprint('geoapp_bp', __name__)
 services = GeoAppServices()
 
 
+@geoapp_bp.route('/', methods=['GET'])
+def index():
+    """
+    Index
+    """
+    return 'go to /geoapp/...'
+
+
 @geoapp_bp.route('/geoapp/zipcode/<string:zipcode>', methods=['GET'])
 @requires_auth
 def get_paystats_by_zipcode(zipcode: str):

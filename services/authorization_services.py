@@ -65,8 +65,8 @@ class AuthorizationServices:
         sql = f"INSERT INTO USERS(USERNAME, PASSWORD) VALUES ('{username}', '{pw_hash}')"
         connection = self.db_tools.get_db_connection()
         cursor = connection.cursor()
-        connection.commit()
         cursor.execute(sql)
+        connection.commit()
         cursor.close()
         connection.close()
 

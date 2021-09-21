@@ -1,5 +1,6 @@
 #!/bin/bash
 docker run -d --name postgresdb -p 5435:5432 -e POSTGRES_PASSWORD=postgres pgrouting/pgrouting:11-2.5-2.6.3
+sleep 5s
 docker exec -it postgresdb psql -h localhost -U postgres -c "CREATE EXTENSION postgis;"
 ./database/init_db.py
 python3.8 -m venv app_env
