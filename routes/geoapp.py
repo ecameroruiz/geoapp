@@ -40,3 +40,56 @@ def get_paystats_by_zipcode(zipcode: str):
                                            error_message=f"No data found for zipcode {zipcode}")
     except Exception as e:
         return generate_exception_response(exception=e)
+
+
+@geoapp_bp.route('/geoapp/geometry/<string:geometry>', methods=['GET'])
+@requires_auth
+def get_paystats_by_geometry(geometry: str):
+    """
+    Get paystats by age and gender given a WKB geometry
+
+    :param str geometry: WKB
+    :return: Paystats dict with aggregated data
+    :rtype dict
+    """
+    try:
+        if session.get(geometry):  # get data from session if already stored
+            paystats = session[geometry]
+        else:  # get from db otherwise
+            paystats = services.get_paystats_by_geometry(geometry=geometry)
+            # store in session
+            session[geometry] = paystats
+        if paystats:
+            return generate_success_response(code=requests.codes['ok'],
+                                             response_data=paystats)
+        else:
+            return generate_error_response(code=requests.codes['not_found'],
+                                           error_message=f"No data found for geometry {geometry}")
+    except Exception as e:
+        return generate_exception_response(exception=e)
+
+
+@geoapp_bp.route('/geoapp/all', methods=['GET'])
+@requires_auth
+def get_all_paystats():
+    """
+    Get all paystats by age and gender
+
+    :return: Paystats dict with aggregated data
+    :rtype dict
+    """
+    try:
+        if session.get('all'):  # get data from session if already stored
+            paystats = session['all']
+        else:  # get from db otherwise
+            paystats = services.get_all_paystats()
+            # store in session
+            session['all'] = paystats
+        if paystats:
+            return generate_success_response(code=requests.codes['ok'],
+                                             response_data=paystats)
+        else:
+            return generate_error_response(code=requests.codes['not_found'],
+                                           error_message=f"No data found")
+    except Exception as e:
+        return generate_exception_response(exception=e)
