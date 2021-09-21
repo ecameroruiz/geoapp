@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 source app_env/bin/activate
-pip3 install -r requirements.txt
-python -m unittest discover -s tests -p 'tests.py' -v
+pip3.8 install -r requirements.txt
+python3.8 -m unittest discover -s tests -p 'tests.py' -v
